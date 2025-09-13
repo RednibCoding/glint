@@ -2,10 +2,13 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Glint Project",
+            "label": "Build",
             "type": "shell",
-            "command": "node",
-            "args": ["glint.js"],
+            "command": "npm",
+            "args": ["run", "build"],
+            "options": {
+                "cwd": "${workspaceFolder}/example"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -19,10 +22,26 @@
             "problemMatcher": []
         },
         {
-            "label": "Start Glint Dev Server",
+            "label": "Kill Dev Server",
             "type": "shell",
-            "command": "node",
-            "args": ["glint.js", "--watch"],
+            "command": "pkill",
+            "args": ["-f", "glint.js --watch", "||", "true"],
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Dev Server",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run", "dev"],
+            "options": {
+                "cwd": "${workspaceFolder}/example"
+            },
             "group": "build",
             "isBackground": true,
             "presentation": {
@@ -47,36 +66,8 @@
                         "endsPattern": "🔥 Glint dev server running at http://localhost:3000/"
                     }
                 }
-            ]
-        },
-        {
-            "label": "Open Glint Dev Server",
-            "type": "shell",
-            "command": "python3",
-            "args": ["-c", "import webbrowser; webbrowser.open('http://localhost:3000')"],
-            "group": "test",
-            "presentation": {
-                "echo": false,
-                "reveal": "never",
-                "focus": false,
-                "panel": "shared"
-            },
-            "dependsOn": "Start Glint Dev Server"
-        },
-        {
-            "label": "Build and Serve",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Start Glint Dev Server",
-                "Open Glint Dev Server"
             ],
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            }
+            "dependsOn": "Kill Dev Server"
         }
     ]
 }

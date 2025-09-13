@@ -40,7 +40,7 @@ class GlintCompiler {
         // Generate the bundle
         this.generateBundle();
         
-        console.log(`✅ Built ${this.componentFiles.length} components successfully!`);
+        console.log(`✅ Built ${this.componentFiles.length}/${this.componentFiles.length} components successfully!`);
 
         if (watchMode) {
             this.startWatcher();
@@ -70,8 +70,6 @@ class GlintCompiler {
         // Parse the JSX component
         const component = this.parseJSXComponent(content, componentName, filePath);
         this.components.set(componentName, component);
-        
-        console.log(`📦 Processed: ${componentName}`);
     }
 
     parseJSXComponent(content, componentName, filePath) {
@@ -264,23 +262,28 @@ customElements.define('${tagName}', createComponent(${functionName}, '${tagName}
     }
 
     processHtmlFiles() {
-        // Find and process HTML files
-        const htmlFiles = ['index.html', 'src/index.html'].filter(file => fs.existsSync(file));
+        // Standard Glint project structure: src/index.html is required
+        const htmlFile = 'src/index.html';
         
-        htmlFiles.forEach(htmlFile => {
-            let content = fs.readFileSync(htmlFile, 'utf8');
-            
-            // Inject the bundle script
-            if (!content.includes('glint-bundle.js')) {
-                content = content.replace(
-                    '</head>',
-                    '  <script src="build/glint-bundle.js"></script>\n</head>'
-                );
-            }
-            
-            // Auto-inject hot reload script in watch mode (dev only)
-            if (this.watchMode && !content.includes('ws://localhost:3000')) {
-                const hotReloadScript = `
+        if (!fs.existsSync(htmlFile)) {
+            console.error('❌ Required file src/index.html not found!');
+            console.log('📁 Glint projects must have src/index.html as the entry point');
+            return;
+        }
+        
+        let content = fs.readFileSync(htmlFile, 'utf8');
+        
+        // Inject the bundle script
+        if (!content.includes('glint-bundle.js')) {
+            content = content.replace(
+                '</head>',
+                '  <script src="build/glint-bundle.js"></script>\n</head>'
+            );
+        }
+        
+        // Auto-inject hot reload script in watch mode (dev only)
+        if (this.watchMode && !content.includes('ws://localhost:3000')) {
+            const hotReloadScript = `
     <script>
         // Auto-reload in dev mode (injected by Glint compiler)
         const ws = new WebSocket('ws://localhost:3000');
@@ -290,12 +293,11 @@ customElements.define('${tagName}', createComponent(${functionName}, '${tagName}
             }
         };
     </script>`;
-                
-                content = content.replace('</body>', hotReloadScript + '\n</body>');
-            }
             
-            fs.writeFileSync(path.join(this.outputDir, path.basename(htmlFile)), content);
-        });
+            content = content.replace('</body>', hotReloadScript + '\n</body>');
+        }
+        
+        fs.writeFileSync(path.join(this.outputDir, 'index.html'), content);
     }
 
     startWatcher() {
