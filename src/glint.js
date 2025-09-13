@@ -123,7 +123,7 @@ class GlintCompiler {
             console.error(`   Components should consume states, not create them.`);
             console.error(`\n💡 Solution:`);
             console.error(`   Replace: createState('stateName', { ... })`);
-            console.error(`   With:    getState('stateName') (after creating state in separate JS file)`);
+            console.error(`   With:    useState('stateName') (after creating state in separate JS file)`);
             console.error(`\n📖 Create global states in separate JS files, not in components.\n`);
             hasErrors = true;
         }
@@ -138,7 +138,7 @@ class GlintCompiler {
             console.error(`   Components should use actions, not create them.`);
             console.error(`\n💡 Solution:`);
             console.error(`   Replace: createActions('actionsName', { ... })`);
-            console.error(`   With:    getActions('actionsName') (after creating actions in separate JS file)`);
+            console.error(`   With:    useActions('actionsName') (after creating actions in separate JS file)`);
             console.error(`\n📖 Create global actions in separate JS files, not in components.\n`);
             hasErrors = true;
         }
@@ -484,12 +484,12 @@ function createState(name, initialState) {
     // Detect if we're being called from within a component context
     if (currentComponent) {
         console.error(\`🚫 GLINT ERROR: createState() called inside component '\${currentComponent.constructor.name}'\`);
-        console.error(\`💡 Use 'getState("\${name}")' instead to access existing state.\`);
+        console.error(\`💡 Use 'useState("\${name}")' instead to access existing state.\`);
         console.error(\`📖 Global states should be created in separate JS files, not in components.\`);
         
         // In development, throw an error to prevent the mistake
         if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
-            throw new Error(\`createState() not allowed in components. Use getState() instead.\`);
+            throw new Error(\`createState() not allowed in components. Use useState() instead.\`);
         }
         
         // In production, just warn and return existing state if it exists
@@ -601,12 +601,12 @@ function createActions(name, actionFunctions) {
     // Detect if we're being called from within a component context
     if (currentComponent) {
         console.error(\`🚫 GLINT ERROR: createActions() called inside component '\${currentComponent.constructor.name}'\`);
-        console.error(\`💡 Use 'getActions("\${name}")' instead to access existing actions.\`);
+        console.error(\`💡 Use 'useActions("\${name}")' instead to access existing actions.\`);
         console.error(\`📖 Global actions should be created in separate JS files, not in components.\`);
         
         // In development, throw an error to prevent the mistake
         if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
-            throw new Error(\`createActions() not allowed in components. Use getActions() instead.\`);
+            throw new Error(\`createActions() not allowed in components. Use useActions() instead.\`);
         }
         
         // In production, just warn and return existing actions if they exist
@@ -644,8 +644,8 @@ function createHooks(stateName, hooks) {
         // In production, just warn and return null
         return null;
     }
-    
-    const state = getState(stateName);
+
+    const state = useState(stateName);
     if (!state || !state._glintState) {
         console.error(\`State '\${stateName}' not found. Make sure to call createState first.\`);
         return null;
@@ -677,11 +677,11 @@ function createHooks(stateName, hooks) {
     return hookFunctions;
 }
 
-function getState(name) {
+function useState(name) {
     return window.glintStates?.[name] || null;
 }
 
-function getActions(name) {
+function useActions(name) {
     return window.glintActions?.[name] || null;
 }
 
@@ -693,8 +693,8 @@ function getHooks(name) {
 window.createState = createState;
 window.createActions = createActions;
 window.createHooks = createHooks;
-window.getState = getState;
-window.getActions = getActions;
+window.useState = useState;
+window.useActions = useActions;
 window.getHooks = getHooks;
 
 // Backward compatibility
@@ -714,7 +714,7 @@ class GlintElement extends HTMLElement {
     
     // Component-level hook system
     onStateChange(stateName, property, callback) {
-        const state = getState(stateName);
+        const state = useState(stateName);
         if (!state || !state._glintState) {
             console.error(\`State '\${stateName}' not found\`);
             return;
@@ -755,7 +755,7 @@ class GlintElement extends HTMLElement {
     disconnectedCallback() {
         // Clean up component-specific hooks
         this._componentHooks.forEach((properties, stateName) => {
-            const state = getState(stateName);
+            const state = useState(stateName);
             if (state && state._glintState) {
                 properties.forEach((hooks, property) => {
                     hooks.forEach(hook => {

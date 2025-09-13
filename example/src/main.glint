@@ -5,6 +5,10 @@
     <div class="demo-section">
       <simple-counter title="My Counter"></simple-counter>
     </div>
+    
+    <div class="demo-section">
+      <user-panel></user-panel>
+    </div>
   </div>
 </template>
 

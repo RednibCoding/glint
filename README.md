@@ -310,10 +310,10 @@ const userHooks = createHooks('user', {
 
 <script>
   // Access global state
-  this.userState = getState('user');
+  this.userState = useState('user');
   
   // Access global actions
-  this.userActions = getActions('user');
+  this.userActions = useActions('user');
   
   // Component-level state hooks with automatic cleanup
   function onMounted() {
@@ -400,10 +400,10 @@ Glint prevents common architectural mistakes:
 ```html
 <script>
   // ✅ GOOD: Access existing global state
-  this.userState = getState('user');
+  this.userState = useState('user');
   
   // ✅ GOOD: Use existing global actions
-  this.userActions = getActions('user');
+  this.userActions = useActions('user');
   
   // ✅ GOOD: Component-level hooks with auto-cleanup
   function onMounted() {
@@ -525,7 +525,7 @@ All `.js` files are automatically found, bundled into `user-bundle.js`, and incl
 
 <script>
   // Get global todo state
-  this.todoState = getState('todos');
+  this.todoState = useState('todos');
   this.todos = this.todoState.items;
   this.newTodoText = '';
   
@@ -538,19 +538,19 @@ All `.js` files are automatically found, bundled into `user-bundle.js`, and incl
   
   function addTodo() {
     if (this.newTodoText.trim()) {
-      const actions = getActions('todos');
+      const actions = useActions('todos');
       actions.addTodo(this.newTodoText.trim());
       this.newTodoText = '';
     }
   }
   
   function toggleTodo(index) {
-    const actions = getActions('todos');
+    const actions = useActions('todos');
     actions.toggleTodo(index);
   }
   
   function removeTodo(index) {
-    const actions = getActions('todos');
+    const actions = useActions('todos');
     actions.removeTodo(index);
   }
 </script>

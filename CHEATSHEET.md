@@ -135,8 +135,8 @@ const userHooks = createHooks('user', {
 ```html
 <script>
   // Access global state & actions
-  this.userState = getState('user');
-  this.userActions = getActions('user');
+  this.userState = useState('user');
+  this.userActions = useActions('user');
   
   // Component-level hooks (auto-cleanup)
   function onMounted() {
@@ -185,10 +185,10 @@ const appHooks = createHooks('user', {
 ```html
 <script>
   // ✅ Access existing global state
-  this.userState = getState('user');
+  this.userState = useState('user');
   
   // ✅ Use existing global actions
-  this.userActions = getActions('user');
+  this.userActions = useActions('user');
   
   // ✅ Component-level hooks
   function onMounted() {
@@ -250,7 +250,7 @@ const appHooks = createHooks('user', {
 </template>
 
 <script>
-  this.todoState = getState('todos');
+  this.todoState = useState('todos');
   this.todos = this.todoState.items;
   this.newTodo = '';
   
@@ -259,13 +259,13 @@ const appHooks = createHooks('user', {
   }
   
   function addTodo() {
-    const actions = getActions('todos');
+    const actions = useActions('todos');
     actions.addTodo(this.newTodo);
     this.newTodo = '';
   }
   
   function removeTodo(id) {
-    getActions('todos').removeTodo(id);
+    useActions('todos').removeTodo(id);
   }
 </script>
 ```
@@ -276,9 +276,9 @@ const appHooks = createHooks('user', {
 ```javascript
 // State Management
 createState(name, initialState)  // Create reactive state
-getState(name)                   // Access existing state
+useState(name)                   // Access existing state
 createActions(name, actions)     // Create action functions
-getActions(name)                 // Access existing actions
+useActions(name)                 // Access existing actions
 
 // Hooks
 createHooks(stateName, hooks)    // Global hooks (JS files only)
