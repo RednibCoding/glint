@@ -15,9 +15,11 @@ class GlintCompiler {
     constructor() {
         this.components = new Map();
         this.stores = new Map();
+        this.utilities = new Map(); // Add utilities support
         this.outputDir = 'build';
         this.componentFiles = [];
         this.storeFiles = [];
+        this.utilityFiles = []; // Add utility files
     }
 
     async build(watchMode = false) {
@@ -31,21 +33,23 @@ class GlintCompiler {
         // Find all component and store files
         this.componentFiles = this.findComponentFiles('src');
         this.storeFiles = this.findStoreFiles('src');
+        this.utilityFiles = this.findUtilityFiles('src');
         
-        if (this.componentFiles.length === 0 && this.storeFiles.length === 0) {
-            console.log('No .glint.js or .store.js files found in src/ directory');
+        if (this.componentFiles.length === 0 && this.storeFiles.length === 0 && this.utilityFiles.length === 0) {
+            console.log('No .glint.js, .store.js, or .js files found in src/ directory');
             return;
         }
 
-        // Process stores first, then components
+        // Process utilities first, then stores, then components
+        this.utilityFiles.forEach(file => this.processUtility(file));
         this.storeFiles.forEach(file => this.processStore(file));
         this.componentFiles.forEach(file => this.processComponent(file));
         
         // Generate the bundle
         this.generateBundle();
         
-        const totalFiles = this.componentFiles.length + this.storeFiles.length;
-        console.log(`✅ Built ${this.componentFiles.length} components + ${this.storeFiles.length} stores (${totalFiles} files) successfully!`);
+        const totalFiles = this.componentFiles.length + this.storeFiles.length + this.utilityFiles.length;
+        console.log(`✅ Built ${this.componentFiles.length} components + ${this.storeFiles.length} stores + ${this.utilityFiles.length} utilities (${totalFiles} files) successfully!`);
 
         if (watchMode) {
             this.startWatcher();
@@ -83,6 +87,23 @@ class GlintCompiler {
             });
     }
 
+    findUtilityFiles(dir) {
+        if (!fs.existsSync(dir)) return [];
+        
+        return fs.readdirSync(dir, { withFileTypes: true })
+            .flatMap(entry => {
+                const fullPath = path.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                    return this.findUtilityFiles(fullPath);
+                } else if (entry.name.endsWith('.js') && 
+                          !entry.name.endsWith('.glint.js') && 
+                          !entry.name.endsWith('.store.js')) {
+                    return [fullPath];
+                }
+                return [];
+            });
+    }
+
     processStore(filePath) {
         const content = fs.readFileSync(filePath, 'utf8');
         const storeName = this.getStoreName(filePath);
@@ -90,11 +111,25 @@ class GlintCompiler {
         this.stores.set(storeName, { content, filePath });
     }
 
+    processUtility(filePath) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const utilityName = this.getUtilityName(filePath);
+        
+        this.utilities.set(utilityName, { content, filePath });
+    }
+
     getStoreName(filePath) {
         const filename = path.basename(filePath, '.store.js');
         return filename.split('-')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join('') + 'Store';
+    }
+
+    getUtilityName(filePath) {
+        const filename = path.basename(filePath, '.js');
+        return filename.split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join('') + 'Utility';
     }
 
     processComponent(filePath) {
@@ -130,6 +165,12 @@ class GlintCompiler {
 
     generateBundle() {
         let output = this.generateRuntime();
+        
+        // Add utilities first (so they're available to everything else)
+        this.utilities.forEach(utility => {
+            output += '\n\n// Utility: ' + utility.filePath + '\n';
+            output += utility.content;
+        });
         
         // Add each store
         this.stores.forEach(store => {
@@ -229,9 +270,10 @@ let stateIndex = 0;
 
 // Hook to capture handlers automatically
 function useHandlers(handlers) {
-    if (window._glintHandlers) {
-        Object.assign(window._glintHandlers, handlers);
+    if (!window._glintHandlers) {
+        window._glintHandlers = {};
     }
+    Object.assign(window._glintHandlers, handlers);
 }
 
 // Named store hook - useStore('storeName', initialState, actions) 
@@ -327,33 +369,70 @@ function createComponent(componentFunc, tagName) {
             currentComponent = this;
             stateIndex = 0;
             
-            // Create a proxy to capture function declarations
-            const handlers = {};
-            const originalConsole = console.log;
-            
-            // Override console temporarily to capture handler assignments
-            window._glintHandlers = handlers;
+            // Initialize handlers object for this component
+            window._glintHandlers = {};
             
             const props = this._getProps();
             const html = componentFunc(props);
             this.shadowRoot.innerHTML = html;
-            this._bindEvents(handlers);
+            this._bindEvents(window._glintHandlers || {});
             
             currentComponent = null;
         }
         
         _bindEvents(handlers) {
-            this.shadowRoot.querySelectorAll('[onclick]').forEach(el => {
-                const handlerName = el.getAttribute('onclick');
-                el.removeAttribute('onclick');
+            // Define all supported events
+            const eventTypes = [
+                // Mouse Events
+                'onclick', 'ondblclick', 'onmousedown', 'onmouseup', 'onmouseover', 
+                'onmouseout', 'onmousemove', 'onmouseenter', 'onmouseleave',
                 
-                // Try to find handler from useHandlers or global scope
-                const handler = handlers[handlerName] || window[handlerName];
-                if (handler && typeof handler === 'function') {
-                    el.onclick = handler;
-                } else {
-                    console.warn(\`Handler '\${handlerName}' not found\`);
-                }
+                // Form Events
+                'onchange', 'oninput', 'onsubmit', 'onfocus', 'onblur', 'onselect',
+                'onreset', 'oninvalid',
+                
+                // Keyboard Events
+                'onkeydown', 'onkeyup', 'onkeypress',
+                
+                // Touch Events (for mobile)
+                'ontouchstart', 'ontouchend', 'ontouchmove', 'ontouchcancel',
+                
+                // Drag Events
+                'ondragstart', 'ondrag', 'ondragenter', 'ondragover', 
+                'ondragleave', 'ondrop', 'ondragend',
+                
+                // Media Events
+                'onloadstart', 'onloadeddata', 'onloadedmetadata', 'oncanplay',
+                'oncanplaythrough', 'onplay', 'onpause', 'onended', 'onvolumechange',
+                
+                // Window/Document Events
+                'onload', 'onerror', 'onresize', 'onscroll', 'onunload',
+                
+                // Other useful events
+                'oncontextmenu', 'onwheel', 'onanimationstart', 'onanimationend',
+                'ontransitionstart', 'ontransitionend'
+            ];
+            
+            // Bind all event types
+            eventTypes.forEach(eventType => {
+                const eventName = eventType.substring(2); // Remove 'on' prefix
+                const selector = '[' + eventType + ']';
+                
+                this.shadowRoot.querySelectorAll(selector).forEach(el => {
+                    const handlerName = el.getAttribute(eventType);
+                    el.removeAttribute(eventType);
+                    
+                    // Try to find handler from useHandlers or global scope
+                    const handler = handlers[handlerName] || 
+                                   window[handlerName] || 
+                                   (window._glintHandlers && window._glintHandlers[handlerName]);
+                    
+                    if (handler && typeof handler === 'function') {
+                        el.addEventListener(eventName, handler);
+                    } else {
+                        console.warn(eventType + ' handler "' + handlerName + '" not found');
+                    }
+                });
             });
         }
     };
@@ -433,7 +512,10 @@ customElements.define('${tagName}', createComponent(${functionName}, '${tagName}
     startWatcher() {
         console.log('👀 Watching for file changes...');
         
-        chokidar.watch(['src/**/*.glint.js', 'src/**/*.store.js'], { ignoreInitial: true })
+        chokidar.watch(['src/**/*.glint.js', 'src/**/*.store.js', 'src/**/*.js'], { 
+            ignoreInitial: true,
+            ignored: /node_modules/ // Ignore node_modules
+        })
             .on('change', () => {
                 console.log('🔄 File changed, rebuilding...');
                 this.build(false).then(() => {

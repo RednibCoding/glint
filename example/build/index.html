@@ -66,25 +66,24 @@
         </div>
         
         <div class="component-demo">
-            <h3>Global State Management (Legacy)</h3>
-            <global-counter></global-counter>
-            <global-state-reader></global-state-reader>
+            <h3>Utility Functions Demo</h3>
+            <utils-demo></utils-demo>
         </div>
         
         <div class="component-demo">
-            <h3>Named Stores (Recommended)</h3>
+            <h3>Comprehensive Utilities Demo</h3>
+            <comprehensive-utils-demo></comprehensive-utils-demo>
+        </div>
+        
+        <div class="component-demo">
+            <h3>Events System Demo</h3>
+            <events-demo></events-demo>
+        </div>
+        
+        <div class="component-demo">
+            <h3>Named Stores - Global State Management</h3>
             <named-stores-demo></named-stores-demo>
         </div>
     </div>
-
-    <script>
-        // Auto-reload in dev mode (injected by Glint compiler)
-        const ws = new WebSocket('ws://localhost:3000');
-        ws.onmessage = (event) => {
-            if (event.data === 'reload') {
-                location.reload();
-            }
-        };
-    </script>
 </body>
 </html>
