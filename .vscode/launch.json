@@ -1,0 +1,74 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Glint Dev Server",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/glint.js",
+            "args": ["--watch"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "presentation": {
+                "hidden": false,
+                "group": "glint",
+                "order": 1
+            }
+        },
+        {
+            "name": "Build Glint Project",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/glint.js",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "presentation": {
+                "hidden": false,
+                "group": "glint",
+                "order": 2
+            }
+        },
+        {
+            "name": "Debug Glint Compiler",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/glint.js",
+            "args": ["--watch"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "stopOnEntry": false,
+            "env": {
+                "NODE_ENV": "development",
+                "DEBUG": "glint:*"
+            },
+            "presentation": {
+                "hidden": false,
+                "group": "glint",
+                "order": 3
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Start Glint Development",
+            "configurations": ["Launch Glint Dev Server"],
+            "presentation": {
+                "hidden": false,
+                "group": "glint",
+                "order": 1
+            }
+        }
+    ]
+}

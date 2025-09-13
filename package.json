@@ -1,47 +1,26 @@
 {
-  "name": "glint-compiler",
-  "version": "1.0.0",
-  "description": "Glint: A tiny Vue/Svelte-like component framework built on Web Components with minimal dependencies",
-  "main": "src/glint.js",
+  "name": "glint-v2-compiler",
+  "version": "2.0.0",
+  "description": "Glint Framework v2.0 - JSX-like Components Compiler",
+  "main": "glint.js",
   "bin": {
-    "glint": "src/glint.js"
+    "glint": "./glint.js"
   },
   "scripts": {
-    "build": "node src/glint.js",
-    "dev": "node src/glint.js --watch",
-    "test": "node src/glint.js",
-    "example": "cd example && npm run dev"
+    "dev": "node glint.js --watch",
+    "build": "node glint.js"
   },
-  "files": [
-    "src/",
-    "README.md",
-    "LICENSE"
-  ],
-  "keywords": [
-    "web-components",
-    "compiler",
-    "reactive",
-    "template",
-    "shadow-dom",
-    "framework",
-    "hot-reload",
-    "minimal",
-    "vue-like",
-    "svelte-like"
-  ],
-  "author": "RednibCoding",
-  "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.1.2",
-    "chokidar": "^3.6.0",
-    "ws": "^8.18.3"
+    "chokidar": "^3.5.3",
+    "ws": "^8.14.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/RednibCoding/glint.git"
-  },
-  "bugs": {
-    "url": "https://github.com/RednibCoding/glint/issues"
-  },
-  "homepage": "https://github.com/RednibCoding/glint#readme"
+  "keywords": [
+    "javascript",
+    "jsx",
+    "components",
+    "reactive",
+    "framework"
+  ],
+  "author": "",
+  "license": "MIT"
 }
