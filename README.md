@@ -517,7 +517,7 @@ All `.js` files are automatically found, bundled into `user-bundle.js`, and incl
     ).join('') }}
     
     <div class="add-todo">
-      <input type="text" oninput="this.newTodoText = event.target.value" placeholder="Add todo..." />
+      <input type="text" oninput="this.updateText(event)" />
       <button onclick="this.addTodo()">Add</button>
     </div>
   </div>
@@ -534,6 +534,10 @@ All `.js` files are automatically found, bundled into `user-bundle.js`, and incl
     this.onStateChange('todos', 'items', (newTodos) => {
       this.todos = newTodos;
     });
+  }
+
+  function updateText(event) {
+    this.newTodoText = event.target.value;
   }
   
   function addTodo() {
