@@ -114,8 +114,8 @@ class GlintCompiler {
  * Glint Framework v2.0 - Clean Function Components
  */
 
-// JSX helper
-function jsx(strings, ...values) {
+// HTML tagged template literal (provides syntax highlighting)
+function html(strings, ...values) {
     let result = '';
     for (let i = 0; i < strings.length; i++) {
         result += strings[i];
@@ -125,6 +125,12 @@ function jsx(strings, ...values) {
         }
     }
     return result;
+}
+
+// Legacy JSX helper (deprecated - use html\`\` instead)
+function jsx(strings, ...values) {
+    console.warn('jsx\`\` is deprecated. Use html\`\` for better syntax highlighting.');
+    return html(strings, ...values);
 }
 
 // Current component context
@@ -231,6 +237,7 @@ function createComponent(componentFunc, tagName) {
     };
 }
 
+window.html = html;
 window.jsx = jsx;
 window.useState = useState;
 window.useHandlers = useHandlers;

@@ -43,7 +43,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Glint v2.0 - JSX Components with Props</h1>
+        <h1>🚀 Glint v2.0 - JSX Components Demo</h1>
         
         <div class="component-demo">
             <h3>Counter Component (No Props)</h3>
@@ -59,16 +59,11 @@
                 <welcome-message></welcome-message>
             </div>
         </div>
+        
+        <div class="component-demo">
+            <h3>Conditional Rendering & Loops</h3>
+            <conditional-example></conditional-example>
+        </div>
     </div>
-
-    <script>
-        // Auto-reload in dev mode (injected by Glint compiler)
-        const ws = new WebSocket('ws://localhost:3000');
-        ws.onmessage = (event) => {
-            if (event.data === 'reload') {
-                location.reload();
-            }
-        };
-    </script>
 </body>
 </html>

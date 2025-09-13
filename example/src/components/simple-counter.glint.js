@@ -9,7 +9,7 @@ function SimpleCounter() {
     // Register handlers right after defining them
     useHandlers({ increment, decrement, reset });
     
-    return jsx`
+    return html`
         <style>
             .counter {
                 text-align: center;

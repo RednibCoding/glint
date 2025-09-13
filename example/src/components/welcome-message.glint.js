@@ -1,5 +1,5 @@
 function WelcomeMessage(props) {
-    const jsx = `
+    const jsx = html`
         <style>
             .welcome {
                 padding: 20px;
