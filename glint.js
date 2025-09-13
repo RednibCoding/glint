@@ -14,8 +14,10 @@ const WebSocket = require('ws');
 class GlintCompiler {
     constructor() {
         this.components = new Map();
+        this.stores = new Map();
         this.outputDir = 'build';
         this.componentFiles = [];
+        this.storeFiles = [];
     }
 
     async build(watchMode = false) {
@@ -26,21 +28,24 @@ class GlintCompiler {
         // Ensure build directory exists
         fs.mkdirSync(this.outputDir, { recursive: true });
         
-        // Find all component files (.glint.js)
+        // Find all component and store files
         this.componentFiles = this.findComponentFiles('src');
+        this.storeFiles = this.findStoreFiles('src');
         
-        if (this.componentFiles.length === 0) {
-            console.log('No .glint.js component files found in src/ directory');
+        if (this.componentFiles.length === 0 && this.storeFiles.length === 0) {
+            console.log('No .glint.js or .store.js files found in src/ directory');
             return;
         }
 
-        // Process each component
+        // Process stores first, then components
+        this.storeFiles.forEach(file => this.processStore(file));
         this.componentFiles.forEach(file => this.processComponent(file));
         
         // Generate the bundle
         this.generateBundle();
         
-        console.log(`✅ Built ${this.componentFiles.length}/${this.componentFiles.length} components successfully!`);
+        const totalFiles = this.componentFiles.length + this.storeFiles.length;
+        console.log(`✅ Built ${this.componentFiles.length} components + ${this.storeFiles.length} stores (${totalFiles} files) successfully!`);
 
         if (watchMode) {
             this.startWatcher();
@@ -61,6 +66,35 @@ class GlintCompiler {
                 }
                 return [];
             });
+    }
+
+    findStoreFiles(dir) {
+        if (!fs.existsSync(dir)) return [];
+        
+        return fs.readdirSync(dir, { withFileTypes: true })
+            .flatMap(entry => {
+                const fullPath = path.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                    return this.findStoreFiles(fullPath);
+                } else if (entry.name.endsWith('.store.js')) {
+                    return [fullPath];
+                }
+                return [];
+            });
+    }
+
+    processStore(filePath) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const storeName = this.getStoreName(filePath);
+        
+        this.stores.set(storeName, { content, filePath });
+    }
+
+    getStoreName(filePath) {
+        const filename = path.basename(filePath, '.store.js');
+        return filename.split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join('') + 'Store';
     }
 
     processComponent(filePath) {
@@ -96,6 +130,11 @@ class GlintCompiler {
 
     generateBundle() {
         let output = this.generateRuntime();
+        
+        // Add each store
+        this.stores.forEach(store => {
+            output += '\n\n' + store.content;
+        });
         
         // Add each component
         this.components.forEach(component => {
@@ -133,6 +172,57 @@ function jsx(strings, ...values) {
     return html(strings, ...values);
 }
 
+// Named stores for state management
+const namedStores = new Map();
+
+function createStore(name, initialState = {}, actions = {}) {
+    if (!namedStores.has(name)) {
+        const store = {
+            state: initialState,
+            actions: {},
+            subscribers: new Set(),
+            
+            getState() {
+                return this.state;
+            },
+            
+            setState(updates) {
+                if (typeof updates === 'function') {
+                    this.state = { ...this.state, ...updates(this.state) };
+                } else {
+                    this.state = { ...this.state, ...updates };
+                }
+                this.notifySubscribers();
+            },
+            
+            setActions(actions) {
+                // Bind actions with get/set helpers
+                Object.keys(actions).forEach(key => {
+                    this.actions[key] = (...args) => {
+                        const get = () => this.getState();
+                        const set = (updates) => this.setState(updates);
+                        return actions[key](get, set, ...args);
+                    };
+                });
+            },
+            
+            notifySubscribers() {
+                this.subscribers.forEach(callback => callback());
+            },
+            
+            subscribe(callback) {
+                this.subscribers.add(callback);
+                return () => this.subscribers.delete(callback);
+            }
+        };
+        
+        store.setActions(actions);
+        namedStores.set(name, store);
+    }
+    
+    return namedStores.get(name);
+}
+
 // Current component context
 let currentComponent = null;
 let stateIndex = 0;
@@ -144,7 +234,29 @@ function useHandlers(handlers) {
     }
 }
 
-// useState hook
+// Named store hook - useStore('storeName', initialState, actions) 
+function useStore(storeName, initialState = {}, actions = {}) {
+    const component = currentComponent;
+    
+    if (typeof storeName !== 'string') {
+        throw new Error('useStore requires a store name as the first parameter: useStore("storeName", initialState, actions)');
+    }
+    
+    const store = createStore(storeName, initialState, actions);
+    
+    // Subscribe component to this specific store
+    const subscriptionKey = '_' + storeName + 'Subscribed';
+    const unsubscribeKey = '_' + storeName + 'Unsubscribe';
+    
+    if (component && !component[subscriptionKey]) {
+        component[subscriptionKey] = true;
+        component[unsubscribeKey] = store.subscribe(() => component._render());
+    }
+    
+    return [store.getState(), store.actions];
+}
+
+// Local component state hook
 function useState(initialValue) {
     const component = currentComponent;
     const index = stateIndex++;
@@ -177,6 +289,16 @@ function createComponent(componentFunc, tagName) {
         
         connectedCallback() {
             this._render();
+        }
+        
+        disconnectedCallback() {
+            // Cleanup all store subscriptions to prevent memory leaks
+            Object.keys(this).forEach(key => {
+                if (key.endsWith('Unsubscribe') && typeof this[key] === 'function') {
+                    this[key]();
+                    this[key] = null;
+                }
+            });
         }
         
         attributeChangedCallback() {
@@ -240,6 +362,7 @@ function createComponent(componentFunc, tagName) {
 window.html = html;
 window.jsx = jsx;
 window.useState = useState;
+window.useStore = useStore;
 window.useHandlers = useHandlers;
 window.createComponent = createComponent;
 `;
@@ -310,7 +433,7 @@ customElements.define('${tagName}', createComponent(${functionName}, '${tagName}
     startWatcher() {
         console.log('👀 Watching for file changes...');
         
-        chokidar.watch(['src/**/*.glint.js'], { ignoreInitial: true })
+        chokidar.watch(['src/**/*.glint.js', 'src/**/*.store.js'], { ignoreInitial: true })
             .on('change', () => {
                 console.log('🔄 File changed, rebuilding...');
                 this.build(false).then(() => {

@@ -64,6 +64,27 @@
             <h3>Conditional Rendering & Loops</h3>
             <conditional-example></conditional-example>
         </div>
+        
+        <div class="component-demo">
+            <h3>Global State Management (Legacy)</h3>
+            <global-counter></global-counter>
+            <global-state-reader></global-state-reader>
+        </div>
+        
+        <div class="component-demo">
+            <h3>Named Stores (Recommended)</h3>
+            <named-stores-demo></named-stores-demo>
+        </div>
     </div>
+
+    <script>
+        // Auto-reload in dev mode (injected by Glint compiler)
+        const ws = new WebSocket('ws://localhost:3000');
+        ws.onmessage = (event) => {
+            if (event.data === 'reload') {
+                location.reload();
+            }
+        };
+    </script>
 </body>
 </html>
