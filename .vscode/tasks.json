@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Glint Dev Server",
+			"type": "shell",
+			"command": "cd example && node ../src/glint.js --watch",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Glint Dev Server",
+			"type": "shell",
+			"command": "cd example && node ../src/glint.js --watch",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Glint Dev Server Final",
+			"type": "shell",
+			"command": "cd example && node ../src/glint.js --watch",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "glint-example-app",
+  "version": "1.0.0",
+  "description": "Example Glint application demonstrating components and features",
+  "main": "build/glint-components.js",
+  "scripts": {
+    "build": "node ../src/glint.js",
+    "dev": "node ../src/glint.js --watch"
+  },
+  "keywords": [
+    "glint",
+    "web-components",
+    "spa",
+    "example"
+  ],
+  "author": "RednibCoding",
+  "license": "MIT",
+  "devDependencies": {
+    "glint-compiler": "file:.."
+  },
+  "private": true
+}
