@@ -8,7 +8,7 @@ Glint brings the power of declarative, widget-based UI development to the web. I
 
 - **Flutter-Inspired Architecture**: StatelessWidget, StatefulWidget, and declarative UI patterns
 - **Reactive State Management**: Built-in `setState()` with automatic re-rendering
-- **Comprehensive Widget Library**: 20+ production-ready widgets across all categories
+- **Comprehensive Widget Library**: 23+ production-ready widgets across all categories
 - **Zero Dependencies**: Pure JavaScript implementation, no external libraries
 - **Smooth Animations**: Built-in transitions and animations for enhanced UX
 - **Virtual DOM**: Efficient Element-based virtual DOM system
@@ -18,7 +18,7 @@ Glint brings the power of declarative, widget-based UI development to the web. I
 
 ### Basic Widgets
 - **Text** - Styled text rendering with full typography support
-- **Button** - Interactive buttons with hover/active states  
+- **Button** - Interactive buttons with hover/active states and custom styling  
 - **Container** - Layout container with padding, margin, colors, and borders
 
 ### Layout Widgets
@@ -26,6 +26,9 @@ Glint brings the power of declarative, widget-based UI development to the web. I
 - **Row** - Horizontal flex layout with spacing controls
 - **Center** - Centers child widgets
 - **Expanded** - Fills available space in flex layouts
+- **Stack** - Overlapping/absolute positioning with alignment controls
+- **Positioned** - Absolute positioning helper for Stack children
+- **SizedBox** - Fixed-size container for spacing and sizing constraints
 
 ### Display Widgets
 - **Icon** - Emoji and text-based icons
@@ -224,39 +227,3 @@ MIT License - feel free to use in personal and commercial projects.
 ---
 
 Built with ❤️ for developers who love Flutter's declarative UI paradigm.
-
-## Features
-
-- **Unified Language**: Write UI, styling, and logic all in JavaScript
-- **Declarative Widgets**: Flutter-like widget tree with `build()` methods  
-- **Built-in Reactivity**: Automatic UI updates when state changes
-- **Minimal API**: Clean, focused framework that stays small
-
-## Quick Start
-
-```bash
-npm install
-npm run dev
-```
-
-## Example
-
-```javascript
-class CounterApp extends StatefulWidget {
-  constructor() {
-    super();
-    this.state = { count: 0 };
-  }
-
-  build() {
-    return new Column({
-      children: [
-        new Text(`Count: ${this.state.count}`),
-        new Button('Increment', {
-          onPressed: () => this.setState({ count: this.state.count + 1 })
-        })
-      ]
-    });
-  }
-}
-```
