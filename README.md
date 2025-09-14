@@ -107,7 +107,6 @@ runApp(new CounterApp());
 import { Drawer, ListTile, Icon, Divider } from './glint/glint.js';
 
 new Drawer({
-  overlay: true,
   onOverlayTap: () => closeDrawer(),
   animationDuration: 300,
   children: [
