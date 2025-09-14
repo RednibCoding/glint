@@ -20,7 +20,8 @@ class ButtonExampleApp extends StatefulWidget {
           new Text('Button Test', {
             style: { fontSize: '24px', fontWeight: 'bold' }
           }),
-          new Button('Click me!', {
+          new Button({
+            child: new Text('Click me!'),
             onPressed: () => {
               this.setState({ 
                 count: this.state.count + 1,
@@ -28,16 +29,21 @@ class ButtonExampleApp extends StatefulWidget {
               });
             }
           }),
-          new Button('Disabled Button', {
+          new Button({
+            child: new Text('Disabled Button'),
             disabled: true
           }),
-          new Button('Custom Styled', {
+          new Button({
+            child: new Text('Custom Styled'),
             style: { 
               backgroundColor: '#28a745', 
               borderRadius: '20px' 
             },
+            hoverStyle: {
+              backgroundColor: '#1e7e34' // Simple custom hover color
+            },
             onPressed: () => {
-              this.setState({ message: 'Custom button clicked!' });
+              this.setState({ message: 'Custom button with custom hover clicked!' });
             }
           }),
           new Text(this.state.message || 'Click a button to see the result')

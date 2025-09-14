@@ -100,7 +100,8 @@ class CounterApp extends StatefulWidget {
             mainAxisAlignment: 'center',
             gap: 15,
             children: [
-              new Button('- Decrement', {
+              new Button({
+                child: new Text('- Decrement'),
                 onPressed: () => {
                   console.log('Decrement button onPressed called, this:', this);
                   this.setState({ debugLog: 'Decrement button clicked!' });
@@ -114,7 +115,8 @@ class CounterApp extends StatefulWidget {
                 }
               }),
 
-              new Button('Reset', {
+              new Button({
+                child: new Text('Reset'),
                 onPressed: () => this.reset(),
                 style: {
                   backgroundColor: '#6c757d',
@@ -124,7 +126,8 @@ class CounterApp extends StatefulWidget {
                 }
               }),
 
-              new Button('+ Increment', {
+              new Button({
+                child: new Text('+ Increment'),
                 onPressed: () => this.increment(),
                 style: {
                   backgroundColor: '#28a745',

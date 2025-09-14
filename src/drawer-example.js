@@ -43,7 +43,8 @@ class DrawerExampleApp extends StatefulWidget {
           child: new Row({
             mainAxisAlignment: 'spaceBetween',
             children: [
-              new Button('☰', {
+              new Button({
+                child: new Text('☰'),
                 style: {
                   backgroundColor: 'transparent',
                   border: 'none',

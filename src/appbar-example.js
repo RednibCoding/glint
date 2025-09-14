@@ -17,7 +17,8 @@ class AppBarExampleApp extends StatefulWidget {
     return new Column([
       new AppBar({
         title: 'Glint AppBar Demo',
-        leading: new Button('☰', {
+        leading: new Button({
+          child: new Text('☰'),
           style: { 
             backgroundColor: 'transparent',
             border: 'none',
@@ -30,7 +31,8 @@ class AppBarExampleApp extends StatefulWidget {
           }
         }),
         actions: [
-          new Button('🔍', {
+          new Button({
+            child: new Text('🔍'),
             style: { 
               backgroundColor: 'transparent',
               border: 'none',
@@ -42,7 +44,8 @@ class AppBarExampleApp extends StatefulWidget {
               this.setState({ message: '🔍 Search clicked! This would typically open a search interface.' });
             }
           }),
-          new Button('⋮', {
+          new Button({
+            child: new Text('⋮'),
             style: { 
               backgroundColor: 'transparent',
               border: 'none',

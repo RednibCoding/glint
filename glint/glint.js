@@ -13,6 +13,7 @@ export { Column } from './widgets/layout/Column.js';
 export { Row } from './widgets/layout/Row.js';
 export { Expanded } from './widgets/layout/Expanded.js';
 export { Center } from './widgets/layout/Center.js';
+export { SizedBox } from './widgets/layout/SizedBox.js';
 
 // Export individual widgets for testing
 export { AppBar } from './widgets/navigation/AppBar.js';
