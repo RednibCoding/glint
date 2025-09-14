@@ -13,13 +13,15 @@ export class Drawer extends StatelessWidget {
       width = 280,
       backgroundColor = '#ffffff',
       elevation = 16,
-      overlay = true,
       onOverlayTap,
       overlayColor = 'rgba(0, 0, 0, 0.5)',
       animationDuration = 300,
       style = {},
       ...otherProps
     } = this.props;
+
+    // Automatically determine if overlay should be shown based on callback presence
+    const overlay = !!onOverlayTap;
 
     const shadowIntensity = Math.min(elevation * 0.15, 0.4);
     const shadowBlur = elevation * 3;

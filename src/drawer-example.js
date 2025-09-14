@@ -108,7 +108,6 @@ class DrawerExampleApp extends StatefulWidget {
         // Drawer (conditionally rendered for proper animation)
         ...(this.state.isDrawerOpen ? [
           new Drawer({
-            overlay: true,
             onOverlayTap: () => this.toggleDrawer(),
             overlayColor: 'rgba(0, 0, 0, 0.5)',
             animationDuration: 300,
