@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glint Framework - Widget Examples</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .example-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .example-link {
+            display: block;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.2s;
+        }
+        .example-link:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+            transform: translateY(-2px);
+        }
+        .example-link h3 {
+            margin: 0 0 8px 0;
+            color: #007bff;
+        }
+        .example-link p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .counter-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        .counter-link a {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .counter-link a:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Glint Framework - Widget Examples</h1>
+        <p>Choose an example to test individual widgets:</p>
+        
+        <div class="example-links">
+            <a href="?example=minimal" class="example-link">
+                <h3>Minimal Test</h3>
+                <p>Basic framework functionality test</p>
+            </a>
+            
+            <a href="?example=text" class="example-link">
+                <h3>Text Widget</h3>
+                <p>Basic text display with styling options</p>
+            </a>
+            
+            <a href="?example=button" class="example-link">
+                <h3>Button Widget</h3>
+                <p>Interactive buttons with click handlers</p>
+            </a>
+            
+            <a href="?example=layout" class="example-link">
+                <h3>Layout Widgets</h3>
+                <p>Column, Row, and Container layouts</p>
+            </a>
+            
+            <a href="?example=appbar" class="example-link">
+                <h3>AppBar Widget</h3>
+                <p>Application header with title and actions</p>
+            </a>
+            
+            <a href="?example=textfield" class="example-link">
+                <h3>TextField Widget</h3>
+                <p>Text input with reactive state</p>
+            </a>
+
+            <a href="?example=display" class="example-link">
+                <h3>Display Widgets</h3>
+                <p>Cards, Icons, Dividers, Progress Indicators</p>
+            </a>
+
+            <a href="?example=navigation" class="example-link">
+                <h3>Navigation Widgets</h3>
+                <p>ListTile and interactive navigation elements</p>
+            </a>
+
+            <a href="?example=bottomnav" class="example-link">
+                <h3>BottomNavigationBar</h3>
+                <p>Bottom navigation with multiple tabs</p>
+            </a>
+
+            <a href="?example=drawer" class="example-link">
+                <h3>Drawer Widget</h3>
+                <p>Sliding navigation drawer from the side</p>
+            </a>
+        </div>
+
+        <div class="counter-link">
+            <p>Or try the original counter demo:</p>
+            <a href="?example=counter">🚀 Counter Demo</a>
+        </div>
+        
+        <div id="app"></div>
+    </div>
+
+    <script type="module">
+        // Get the example from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const example = urlParams.get('example');
+        
+        if (example) {
+            // Hide the example links when showing an example
+            document.querySelector('.example-links').style.display = 'none';
+            document.querySelector('.counter-link').style.display = 'none';
+            document.querySelector('h1').textContent = '🎯 Glint Framework';
+            document.querySelector('p').textContent = '';
+            
+            // Dynamically import the example
+            try {
+                if (example === 'counter') {
+                    await import('./src/main.js');
+                } else {
+                    await import(`./src/${example}-example.js`);
+                }
+            } catch (error) {
+                console.error(`Failed to load example: ${example}`, error);
+                document.getElementById('app').innerHTML = `
+                    <div style="color: red; padding: 20px; border: 1px solid red; border-radius: 4px; margin: 20px 0;">
+                        <h3>Error Loading Example</h3>
+                        <p>Failed to load example: ${example}</p>
+                        <p>Error: ${error.message}</p>
+                        <a href="/" style="color: #007bff; text-decoration: none;">← Back to Examples</a>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

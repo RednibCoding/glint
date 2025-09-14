@@ -1,26 +1,18 @@
 {
-  "name": "glint-v2-compiler",
-  "version": "2.0.0",
-  "description": "Glint Framework v2.0 - JSX-like Components Compiler",
-  "main": "glint.js",
-  "bin": {
-    "glint": "./glint.js"
-  },
+  "name": "glint",
+  "version": "0.1.0",
+  "description": "A Flutter-inspired UI framework for JavaScript with built-in reactive state",
+  "main": "glint/glint.js",
+  "type": "module",
   "scripts": {
-    "dev": "node glint.js --watch",
-    "build": "node glint.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "dependencies": {
-    "chokidar": "^3.5.3",
-    "ws": "^8.14.2"
-  },
-  "keywords": [
-    "javascript",
-    "jsx",
-    "components",
-    "reactive",
-    "framework"
-  ],
+  "keywords": ["ui", "framework", "reactive", "flutter", "javascript"],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
 }
